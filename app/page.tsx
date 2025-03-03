@@ -131,8 +131,8 @@ export default function Home() {
         <div className="max-w-md mx-auto mb-6">
           <div className="w-full bg-gray-300 rounded-full h-3">
             <div
-              className="bg-green-500 h-3 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              className="w-full bg-gray-300 rounded-full h-3 mt-2"
+              className={`${color} h-3 rounded-full`} style={{ width: `${progress}%` }}
             ></div>
           </div>
         </div>
