@@ -6,20 +6,42 @@ type Timings = {
   [key: string]: string;
 };
 
+interface DayData {
+  date: {
+    readable: string;           // "01 Mar 2025"
+    timestamp: string;         // "1746034800"
+    hijri: Record<string, any>; // detail tanggal hijriyah
+    gregorian: {
+      date: string;            // "01 Mar 2025"
+      weekday: { en: string }; // "Saturday"
+      month: { en: string };   // "March"
+      year: string;            // "2025"
+    };
+  };
+  timings: Timings;
+  meta: Record<string, any>;
+}
+
 export default function Home() {
+  // State untuk jadwal 1 hari (untuk Next Prayer)
   const [jadwal, setJadwal] = useState<Timings | null>(null);
+  // State untuk jadwal 1 bulan penuh
+  const [monthSchedule, setMonthSchedule] = useState<DayData[]>([]);
   const [error, setError] = useState<string | null>(null);
+
   const [currentTime, setCurrentTime] = useState<Date | null>(new Date());
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: Date } | null>(null);
   const [isClient, setIsClient] = useState(false);
 
   const excludedKeys = ["Midnight", "Firstthird", "Lastthird", "Sunrise", "Sunset"];
 
+  // -- 1) Pastikan kita sudah di client side
   useEffect(() => {
     setIsClient(true);
     setCurrentTime(new Date());
   }, []);
 
+  // -- 2) Fetch jadwal harian (untuk Next Prayer)
   useEffect(() => {
     const url = `https://api.aladhan.com/v1/timingsByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8`;
 
@@ -30,23 +52,42 @@ export default function Home() {
           setJadwal(data.data.timings);
           findNextPrayer(data.data.timings);
         } else {
-          setError("Data jadwal tidak ditemukan.");
+          setError("Data jadwal harian tidak ditemukan.");
         }
       })
-      .catch(() => setError("Gagal memuat jadwal sholat. Coba lagi nanti."));
+      .catch(() => setError("Gagal memuat jadwal sholat harian. Coba lagi nanti."));
   }, []);
 
+  // -- 3) Fetch jadwal bulanan (untuk tabel sebulan penuh)
+  useEffect(() => {
+    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=3&year=2025`;
+
+    fetch(monthUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.data) {
+          // data.data akan berisi array dayData untuk setiap hari di bulan Maret
+          setMonthSchedule(data.data);
+        } else {
+          setError("Data jadwal bulanan tidak ditemukan.");
+        }
+      })
+      .catch(() => setError("Gagal memuat jadwal sholat bulanan. Coba lagi nanti."));
+  }, []);
+
+  // -- 4) Update waktu setiap detik, cari Next Prayer lagi
   useEffect(() => {
     if (!isClient) return;
-    
+
     const interval = setInterval(() => {
       setCurrentTime(new Date());
       if (jadwal) findNextPrayer(jadwal);
     }, 1000);
-    
+
     return () => clearInterval(interval);
   }, [jadwal, isClient]);
 
+  // Fungsi untuk me-translate nama key API ke bahasa Indonesia
   const formatKey = (key: string): string => {
     switch (key) {
       case "Fajr":
@@ -66,6 +107,7 @@ export default function Home() {
     }
   };
 
+  // -- 5) Mencari Next Prayer (jadwal harian)
   const findNextPrayer = (timings: Timings) => {
     const now = new Date();
     const prayerTimes = Object.entries(timings)
@@ -92,7 +134,7 @@ export default function Home() {
     setNextPrayer(next);
   };
 
-  // Fungsi getCountdown mengembalikan {hours, minutes, seconds, progress, color}
+  // -- 6) Hitung countdown ke next prayer
   const getCountdown = () => {
     if (!nextPrayer || !currentTime) {
       return { hours: 0, minutes: 0, seconds: 0, progress: 0, color: "bg-green-500" };
@@ -104,8 +146,8 @@ export default function Home() {
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
     let color = "bg-green-500"; // Default: hijau
-    if (minutes < 60) color = "bg-yellow-500"; // Jika kurang dari 60 menit, warna kuning
-    if (minutes < 10) color = "bg-red-500"; // Jika kurang dari 10 menit, warna merah
+    if (minutes < 60) color = "bg-yellow-500"; // Jika < 60 menit, kuning
+    if (minutes < 10) color = "bg-red-500"; // Jika < 10 menit, merah
 
     const dayStart = new Date(nextPrayer.time);
     dayStart.setHours(0, 0, 0, 0);
@@ -116,17 +158,18 @@ export default function Home() {
     return { hours, minutes, seconds, progress, color };
   };
 
+  // Jika belum siap di client
   if (!isClient || !currentTime) {
     return <div className="text-center p-6">Loading...</div>;
   }
 
-  // Perhitungan informasi Ramadan di luar JSX
+  // -- 7) Perhitungan info Ramadan
   const ramadanStart = new Date("2025-03-01");
   let ramadanDayText = "";
   let ramadanDateText = "";
   if (currentTime >= ramadanStart) {
     const diffDays = Math.floor((currentTime.getTime() - ramadanStart.getTime()) / (1000 * 60 * 60 * 24));
-    const ramadanDay = diffDays + 1; // Hari pertama adalah 1
+    const ramadanDay = diffDays + 1; // Hari pertama = 1
     ramadanDayText = `Ramadhan Hari ke-${ramadanDay}`;
     ramadanDateText = currentTime.toLocaleDateString("id-ID", {
       weekday: "long",
@@ -143,10 +186,15 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="mb-6 text-center">
-        <h1 className="text-3xl font-bold text-gray-800">Jadwal Imsakiyah Ramadhan 1446H / 2025M</h1>
+        <h1 className="text-3xl font-bold text-gray-800">
+          Jadwal Imsakiyah Ramadhan 1446H / 2025M
+        </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
-        <h3 className="text-xl font-bold text-gray-800">Selamat Menjalankan Puasa Ramadhan 1446H / 2025M</h3>
+        <h3 className="text-xl font-bold text-gray-800">
+          Selamat Menjalankan Puasa Ramadhan 1446H / 2025M
+        </h3>
         <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
+
         {/* Informasi Ramadan */}
         <p className="text-lg font-medium text-gray-700 mt-2">{ramadanDayText}</p>
         {ramadanDateText && (
@@ -173,7 +221,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Jadwal Sholat */}
+        {/* Jadwal Sholat Hari Ini */}
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
           {error ? (
             <p className="text-center text-red-500">{error}</p>
@@ -182,7 +230,10 @@ export default function Home() {
               {Object.entries(jadwal)
                 .filter(([key]) => !excludedKeys.includes(key))
                 .map(([sholat, waktu]) => (
-                  <li key={sholat} className="flex justify-between border-b pb-4.5 last:border-0">
+                  <li
+                    key={sholat}
+                    className="flex justify-between border-b pb-4.5 last:border-0"
+                  >
                     <span className="font-bold text-gray-700">{formatKey(sholat)}</span>
                     <span className="font-bold text-gray-900">{waktu}</span>
                   </li>
@@ -193,16 +244,79 @@ export default function Home() {
           )}
         </div>
 
-        {/* Countdown */}
+        {/* Countdown Next Prayer */}
         {nextPrayer && (
           <div className="max-w-md mx-auto bg-gradient-to-r from-green-500 via-black to-black text-white p-3.5 rounded-md shadow-md text-center mb-6">
             <p className="text-lg font-semibold">Berikutnya Waktu: {nextPrayer.name}</p>
-            <p className="text-2xl font-mono">{nextPrayer.time.toLocaleTimeString("id-ID")}</p>
+            <p className="text-2xl font-mono">
+              {nextPrayer.time.toLocaleTimeString("id-ID")}
+            </p>
             <p className="mt-1">
               Waktu tersisa: {hours} jam {minutes} menit {seconds} detik
             </p>
           </div>
         )}
+
+        {/* === TABEL JADWAL BULANAN (MARET 2025) === */}
+        <section className="max-w-5xl mx-auto mt-8">
+          <h2 className="text-2xl font-bold text-center mb-4">
+            Tabel Jadwal Sholat Ramadhan (Maret 2025)
+          </h2>
+          {monthSchedule.length === 0 && !error && (
+            <p className="text-center">Memuat jadwal bulanan...</p>
+          )}
+          {monthSchedule.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border p-2">Tanggal</th>
+                    <th className="border p-2">Imsak</th>
+                    <th className="border p-2">Subuh</th>
+                    <th className="border p-2">Dzuhur</th>
+                    <th className="border p-2">Ashar</th>
+                    <th className="border p-2">Maghrib</th>
+                    <th className="border p-2">Isya</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {monthSchedule.map((dayData, idx) => {
+                    // dayData: { date: {...}, timings: {...}, meta: {...} }
+                    const { date, timings } = dayData;
+                    // Contoh: date.gregorian.date = "01 Mar 2025"
+                    const {
+                      Imsak,
+                      Fajr,
+                      Dhuhr,
+                      Asr,
+                      Maghrib,
+                      Isha
+                    } = timings;
+
+                    return (
+                      <tr key={idx}>
+                        <td className="border p-2">
+                          {date.gregorian.date} ({date.gregorian.weekday.en})
+                        </td>
+                        <td className="border p-2">{Imsak}</td>
+                        <td className="border p-2">{Fajr}</td>
+                        <td className="border p-2">{Dhuhr}</td>
+                        <td className="border p-2">{Asr}</td>
+                        <td className="border p-2">{Maghrib}</td>
+                        <td className="border p-2">{Isha}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {error && (
+            <p className="text-center text-red-500 mt-4">
+              {error}
+            </p>
+          )}
+        </section>
       </main>
 
       <footer className="bg-white text-center text-sm text-gray-600 p-4 border-t">
