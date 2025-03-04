@@ -9,29 +9,16 @@ type Timings = {
 export default function Home() {
   const [jadwal, setJadwal] = useState<Timings | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: Date } | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  
   const excludedKeys = ["Midnight", "Firstthird", "Lastthird", "Sunrise", "Sunset"];
 
-  // Tanggal mulai Ramadan: 1 Maret 2025
-  const ramadanStart = new Date("2025-03-01");
-
-  // Hitung informasi Ramadan secara dinamis
-  let ramadanDayText = "";
-  let ramadanDateText = "";
-  if (currentTime >= ramadanStart) {
-    const diffDays = Math.floor((currentTime.getTime() - ramadanStart.getTime()) / (1000 * 60 * 60 * 24));
-    const ramadanDay = diffDays + 1; // Hari pertama adalah 1
-    ramadanDayText = `Ramadhan Hari ke-${ramadanDay}`;
-    ramadanDateText = currentTime.toLocaleDateString("id-ID", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  } else {
-    ramadanDayText = "Ramadhan belum dimulai";
-  }
+  useEffect(() => {
+    setIsClient(true);
+    setCurrentTime(new Date());
+  }, []);
 
   useEffect(() => {
     const url = `https://api.aladhan.com/v1/timingsByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8`;
@@ -50,12 +37,15 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (!isClient) return;
+    
     const interval = setInterval(() => {
       setCurrentTime(new Date());
       if (jadwal) findNextPrayer(jadwal);
     }, 1000);
+    
     return () => clearInterval(interval);
-  }, [jadwal]);
+  }, [jadwal, isClient]);
 
   const formatKey = (key: string): string => {
     switch (key) {
@@ -77,6 +67,8 @@ export default function Home() {
   };
 
   const findNextPrayer = (timings: Timings) => {
+    if (!isClient) return;
+    
     const now = new Date();
     const prayerTimes = Object.entries(timings)
       .filter(([key]) => !excludedKeys.includes(key))
@@ -86,7 +78,6 @@ export default function Home() {
       }))
       .sort((a, b) => a.time.getTime() - b.time.getTime());
 
-    // Jika semua waktu hari ini sudah lewat, ambil jadwal pertama besok
     const next =
       prayerTimes.find((p) => p.time > now) || {
         ...prayerTimes[0],
@@ -96,14 +87,13 @@ export default function Home() {
   };
 
   const getCountdown = () => {
-    if (!nextPrayer) return { hours: 0, minutes: 0, seconds: 0, progress: 0 };
+    if (!nextPrayer || !currentTime) return { hours: 0, minutes: 0, seconds: 0, progress: 0 };
     const now = new Date();
     const diff = Math.max(0, nextPrayer.time.getTime() - now.getTime());
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    // Contoh progress bar: persentase hari berjalan (0:00 - 24:00)
     const dayStart = new Date(nextPrayer.time);
     dayStart.setHours(0, 0, 0, 0);
     const totalDayMs = 24 * 60 * 60 * 1000;
@@ -113,54 +103,33 @@ export default function Home() {
     return { hours, minutes, seconds, progress };
   };
 
+  if (!isClient || !currentTime) {
+    return <div className="text-center p-6">Loading...</div>;
+  }
+
   const { hours, minutes, seconds, progress } = getCountdown();
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* MAIN CONTENT */}
       <header className="mb-6 text-center">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Jadwal Imsakiyah Kabupaten Subang
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Selamat Menjalankan Puasa Ramadhan 1446H / 2025M
-          </p>
-        </header>
+        <h1 className="text-3xl font-bold text-gray-800">Jadwal Imsakiyah Kabupaten Subang</h1>
+        <p className="text-gray-600 mt-2">Selamat Menjalankan Puasa Ramadhan 1446H / 2025M</p>
+        <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
+      </header>
       <main className="flex-grow p-6">
-        {/* Ramadan Info */}
-        <div className="mb-4 text-center">
-          <h1 className="text-xl font-semibold text-gray-700">{ramadanDayText}</h1>
-          {ramadanDateText && <p className="text-gray-600">{ramadanDateText}</p>}
-        </div>
-
-        {/* Waktu Sekarang dengan background hijau */}
+        {/* Waktu Sekarang */}
         <div className="flex flex-col items-center mb-6">
-          <div className="flex items-center space-x-2 text-gray-600 mb-2">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3" />
-            </svg>
-            <span className="font-medium">Waktu Sekarang:</span>
-          </div>
+          <span className="text-gray-600 font-medium">🕥 Waktu Sekarang:</span>
           <div className="text-4xl font-mono bg-green-500 text-white px-8 py-3 rounded-md shadow-md">
             {currentTime.toLocaleTimeString("id-ID")}
           </div>
         </div>
 
-        {/* Countdown Sholat Berikutnya dengan background hijau */}
+        {/* Countdown */}
         {nextPrayer && (
-          <div className="bg-gradient-to-r from-green-400 via-black to-black text-white p-4 rounded-md shadow-md text-center mb-6">
-            <p className="text-lg font-semibold">
-              Sholat Berikutnya: {nextPrayer.name}
-            </p>
-            <p className="text-2xl font-mono">
-              {nextPrayer.time.toLocaleTimeString("id-ID")}
-            </p>
+          <div className="max-w-md mx-auto bg-green-500 text-white p-4 rounded-md shadow-md text-center mb-6">
+            <p className="text-lg font-semibold">Berikutnya: {nextPrayer.name}</p>
+            <p className="text-2xl font-mono">{nextPrayer.time.toLocaleTimeString("id-ID")}</p>
             <p className="mt-1">
               Waktu tersisa: {hours} jam {minutes} menit {seconds} detik
             </p>
@@ -197,12 +166,8 @@ export default function Home() {
           )}
         </div>
       </main>
-
-      {/* FOOTER */}
       <footer className="bg-white text-center text-sm text-gray-600 p-4 border-t">
         <p>© 2025 Jadwal Imsakiyah Kabupaten Subang</p>
-        <p>Data diambil dari Aladhan API</p>
-        <p>Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi setempat.</p>
       </footer>
     </div>
   );
