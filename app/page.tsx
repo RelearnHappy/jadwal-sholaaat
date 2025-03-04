@@ -116,39 +116,41 @@ export default function Home() {
     return <div className="text-center p-6">Loading...</div>;
   }
 
+  // Perhitungan informasi Ramadan diletakkan di sini (di luar JSX)
+  const ramadanStart = new Date("2025-03-01");
+  let ramadanDayText = "";
+  let ramadanDateText = "";
+  if (currentTime >= ramadanStart) {
+    const diffDays = Math.floor((currentTime.getTime() - ramadanStart.getTime()) / (1000 * 60 * 60 * 24));
+    const ramadanDay = diffDays + 1; // Hari pertama adalah 1
+    ramadanDayText = `Ramadhan Hari ke-${ramadanDay}`;
+    ramadanDateText = currentTime.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } else {
+    ramadanDayText = "Ramadhan belum dimulai";
+  }
+
   const { hours, minutes, seconds, progress, color } = getCountdown();
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <main className="flex-grow p-2.5"></main>
       <header className="mb-6 text-center">
         <h1 className="text-3xl font-bold text-gray-800">Jadwal Imsakiyah Ramadhan 1446H / 2025M</h1>
-        <h2 className="text-2xl font-bold text-gray-800"> Kabupaten Subang</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
         <h3 className="text-xl font-bold text-gray-800">Selamat Menjalankan Puasa Ramadhan 1446H / 2025M</h3>
         <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
+        {/* Informasi Ramadan */}
+        <p className="text-lg font-medium text-gray-700 mt-2">{ramadanDayText}</p>
+        {ramadanDateText && (
+          <p className="text-sm text-gray-600">{ramadanDateText}</p>
+        )}
       </header>
-      <main className="flex-grow p-0.3">
-	  
-	// Tanggal mulai Ramadan: 1 Maret 2025
-	const ramadanStart = new Date("2025-03-01");
 
-	// Hitung informasi Ramadan secara dinamis
-	let ramadanDayText = "";
-	let ramadanDateText = "";
-	if (currentTime >= ramadanStart) {
-	const diffDays = Math.floor((currentTime.getTime() - ramadanStart.getTime()) / (1000 * 60 * 60 * 24));
-	const ramadanDay = diffDays + 1; // Hari pertama adalah 1
-	ramadanDayText = `Ramadhan Hari ke-${ramadanDay}`;
-	ramadanDateText = currentTime.toLocaleDateString("id-ID", {
-	weekday: "long",
-	day: "numeric",
-	month: "long",
-	year: "numeric",
-	});
-	} else {
-	ramadanDayText = "Ramadhan belum dimulai";
-	}
-	
+      <main className="flex-grow p-2.5">
         {/* Waktu Sekarang */}
         <div className="flex flex-col items-center mb-6">
           <span className="text-xl font-bold text-gray-700">🕥 Waktu Sekarang:</span>
@@ -186,7 +188,6 @@ export default function Home() {
             <p className="text-center text-gray-500">Loading...</p>
           )}
         </div>
-        <main className="flex-grow p-1.5"></main>
 
         {/* Countdown */}
         {nextPrayer && (
@@ -199,6 +200,7 @@ export default function Home() {
           </div>
         )}
       </main>
+
       <footer className="bg-white text-center text-sm text-gray-600 p-4 border-t">
         <p>© 2025 Jadwal Imsakiyah Kabupaten Subang</p>
         <p>Data diambil dari Aladhan API</p>
