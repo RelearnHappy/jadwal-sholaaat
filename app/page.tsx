@@ -9,10 +9,10 @@ type Timings = {
 export default function Home() {
   const [jadwal, setJadwal] = useState<Timings | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date | null>(new Date());
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: Date } | null>(null);
   const [isClient, setIsClient] = useState(false);
-  
+
   const excludedKeys = ["Midnight", "Firstthird", "Lastthird", "Sunrise", "Sunset"];
 
   useEffect(() => {
@@ -67,15 +67,21 @@ export default function Home() {
   };
 
   const findNextPrayer = (timings: Timings) => {
-    if (!isClient) return;
-    
     const now = new Date();
     const prayerTimes = Object.entries(timings)
       .filter(([key]) => !excludedKeys.includes(key))
-      .map(([name, time]) => ({
-        name: formatKey(name),
-        time: new Date(now.toDateString() + " " + time),
-      }))
+      .map(([name, time]) => {
+        const [hoursStr, minutesStr] = time.split(":");
+        const prayerTime = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          parseInt(hoursStr),
+          parseInt(minutesStr),
+          0
+        );
+        return { name: formatKey(name), time: prayerTime };
+      })
       .sort((a, b) => a.time.getTime() - b.time.getTime());
 
     const next =
@@ -86,7 +92,7 @@ export default function Home() {
     setNextPrayer(next);
   };
 
-  // Fungsi getCountdown sudah mengembalikan {hours, minutes, seconds, progress, color}
+  // Fungsi getCountdown mengembalikan {hours, minutes, seconds, progress, color}
   const getCountdown = () => {
     if (!nextPrayer || !currentTime) {
       return { hours: 0, minutes: 0, seconds: 0, progress: 0, color: "bg-green-500" };
@@ -97,12 +103,10 @@ export default function Home() {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    // Logika warna berdasarkan sisa waktu
     let color = "bg-green-500"; // Default: hijau
     if (minutes < 60) color = "bg-yellow-500"; // Jika kurang dari 60 menit, warna kuning
     if (minutes < 10) color = "bg-red-500"; // Jika kurang dari 10 menit, warna merah
 
-    // Perhitungan progress bar (menggunakan progres hari berjalan)
     const dayStart = new Date(nextPrayer.time);
     dayStart.setHours(0, 0, 0, 0);
     const totalDayMs = 24 * 60 * 60 * 1000;
@@ -116,7 +120,7 @@ export default function Home() {
     return <div className="text-center p-6">Loading...</div>;
   }
 
-  // Perhitungan informasi Ramadan diletakkan di sini (di luar JSX)
+  // Perhitungan informasi Ramadan di luar JSX
   const ramadanStart = new Date("2025-03-01");
   let ramadanDayText = "";
   let ramadanDateText = "";
