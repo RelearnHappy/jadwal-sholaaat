@@ -222,7 +222,7 @@ export default function Home() {
         </div>
 
         {/* Jadwal Sholat Hari Ini */}
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+        <div className="max-w-md mx-auto bg-[#1B263B] rounded-lg shadow-lg p-6">
           {error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : jadwal ? (
