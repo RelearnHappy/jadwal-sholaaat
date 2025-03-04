@@ -111,30 +111,22 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
+      <main className="flex-grow p-2.5"></main>
       <header className="mb-6 text-center">
-        <h1 className="text-3xl font-bold text-gray-800">Jadwal Imsakiyah Kabupaten Subang</h1>
-        <p className="text-gray-600 mt-2">Selamat Menjalankan Puasa Ramadhan 1446H / 2025M</p>
+        <h1 className="text-3xl font-bold text-gray-800">Jadwal Imsakiyah Ramadhan 1446H / 2025M</h1>
+        <h2 className="text-2xl font-bold text-gray-800"> Kabupaten Subang</h2>
+        <h3 className="text-xl font-bold text-gray-800">Selamat Menjalankan Puasa Ramadhan 1446H / 2025M</h3>
         <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
       </header>
-      <main className="flex-grow p-6">
+      <main className="flex-grow p-1.5">
+
         {/* Waktu Sekarang */}
         <div className="flex flex-col items-center mb-6">
-          <span className="text-gray-600 font-medium">🕥 Waktu Sekarang:</span>
-          <div className="text-4xl font-mono bg-green-500 text-white px-8 py-3 rounded-md shadow-md">
+          <span className="text-xl font-bold text-gray-700">🕥 Waktu Sekarang:</span>
+          <div className="text-4xl font-mono bg-gradient-to-l from-green-500 via-black to-black text-white px-8 py-3 rounded-md shadow-md">
             {currentTime.toLocaleTimeString("id-ID")}
           </div>
         </div>
-
-        {/* Countdown */}
-        {nextPrayer && (
-          <div className="max-w-md mx-auto bg-green-500 text-white p-4 rounded-md shadow-md text-center mb-6">
-            <p className="text-lg font-semibold">Berikutnya: {nextPrayer.name}</p>
-            <p className="text-2xl font-mono">{nextPrayer.time.toLocaleTimeString("id-ID")}</p>
-            <p className="mt-1">
-              Waktu tersisa: {hours} jam {minutes} menit {seconds} detik
-            </p>
-          </div>
-        )}
 
         {/* Progress Bar */}
         <div className="max-w-md mx-auto mb-6">
@@ -165,9 +157,24 @@ export default function Home() {
             <p className="text-center text-gray-500">Loading...</p>
           )}
         </div>
+        <main className="flex-grow p-1.5"></main>
+
+        {/* Countdown */}
+        {nextPrayer && (
+          <div className="max-w-md mx-auto bg-gradient-to-r from-green-500 via-black to-black text-white p-4 rounded-md shadow-md text-center mb-6">
+            <p className="text-lg font-semibold">Berikutnya Waktu: {nextPrayer.name}</p>
+            <p className="text-2xl font-mono">{nextPrayer.time.toLocaleTimeString("id-ID")}</p>
+            <p className="mt-1">
+              Waktu tersisa: {hours} jam {minutes} menit {seconds} detik
+            </p>
+          </div>
+        )}
       </main>
       <footer className="bg-white text-center text-sm text-gray-600 p-4 border-t">
         <p>© 2025 Jadwal Imsakiyah Kabupaten Subang</p>
+        <p>Data diambil dari Aladhan API</p>
+        <p>Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi setempat.</p>
+        <p>Build with ❤️.</p>
       </footer>
     </div>
   );
