@@ -26,3 +26,29 @@ body {
 .text-glow {
   text-shadow: 0px 0px 10px rgba(255, 215, 0, 0.8);
 }
+
+.card {
+  background-color: #14213D; /* Biru tua */
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card-title {
+  color: #FFD700; /* Warna emas untuk judul */
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.card-time {
+  color: #F5F5F5;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.card-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 8px 0;
+}
+
