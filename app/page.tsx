@@ -13,6 +13,26 @@ export default function Home() {
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: Date } | null>(null);
   const excludedKeys = ["Midnight", "Firstthird", "Lastthird", "Sunrise", "Sunset"];
 
+  // Tanggal mulai Ramadan: 1 Maret 2025
+  const ramadanStart = new Date("2025-03-01");
+
+  // Hitung informasi Ramadan secara dinamis
+  let ramadanDayText = "";
+  let ramadanDateText = "";
+  if (currentTime >= ramadanStart) {
+    const diffDays = Math.floor((currentTime.getTime() - ramadanStart.getTime()) / (1000 * 60 * 60 * 24));
+    const ramadanDay = diffDays + 1; // Hari pertama adalah 1
+    ramadanDayText = `Ramadhan Hari ke-${ramadanDay}`;
+    ramadanDateText = currentTime.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  } else {
+    ramadanDayText = "Ramadhan belum dimulai";
+  }
+
   useEffect(() => {
     const url = `https://api.aladhan.com/v1/timingsByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8`;
 
@@ -66,11 +86,12 @@ export default function Home() {
       }))
       .sort((a, b) => a.time.getTime() - b.time.getTime());
 
-    // Jika semua waktu hari ini sudah lewat, ambil jadwal pertama dan tambahkan 1 hari
-    const next = prayerTimes.find((p) => p.time > now) || {
-      ...prayerTimes[0],
-      time: new Date(prayerTimes[0].time.getTime() + 24 * 60 * 60 * 1000),
-    };
+    // Jika semua waktu hari ini sudah lewat, ambil jadwal pertama besok
+    const next =
+      prayerTimes.find((p) => p.time > now) || {
+        ...prayerTimes[0],
+        time: new Date(prayerTimes[0].time.getTime() + 24 * 60 * 60 * 1000),
+      };
     setNextPrayer(next);
   };
 
@@ -82,7 +103,7 @@ export default function Home() {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    // Contoh progress bar: persentase hari berjalan
+    // Contoh progress bar: persentase hari berjalan (0:00 - 24:00)
     const dayStart = new Date(nextPrayer.time);
     dayStart.setHours(0, 0, 0, 0);
     const totalDayMs = 24 * 60 * 60 * 1000;
@@ -97,11 +118,19 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* MAIN CONTENT */}
+      <header className="mb-6 text-center">
+          <h1 className="text-3xl font-bold text-gray-800">
+            Jadwal Imsakiyah Kabupaten Subang
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Selamat Menjalankan Puasa Ramadhan 1446H / 2025M
+          </p>
+        </header>
       <main className="flex-grow p-6">
-        {/* Contoh: Menampilkan "Ramadhan Hari ke-X" & Tanggal (opsional) */}
+        {/* Ramadan Info */}
         <div className="mb-4 text-center">
-          <h1 className="text-xl font-semibold text-gray-700">Ramadhan Hari ke-2</h1>
-          <p className="text-gray-600">Senin, 3 Maret 2025</p>
+          <h1 className="text-xl font-semibold text-gray-700">{ramadanDayText}</h1>
+          {ramadanDateText && <p className="text-gray-600">{ramadanDateText}</p>}
         </div>
 
         {/* Waktu Sekarang dengan background hijau */}
@@ -125,7 +154,7 @@ export default function Home() {
 
         {/* Countdown Sholat Berikutnya dengan background hijau */}
         {nextPrayer && (
-          <div className="bg-green-500 text-white p-4 rounded-md shadow-md text-center mb-6">
+          <div className="bg-gradient-to-r from-green-400 via-black to-black text-white p-4 rounded-md shadow-md text-center mb-6">
             <p className="text-lg font-semibold">
               Sholat Berikutnya: {nextPrayer.name}
             </p>
@@ -138,7 +167,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Progress Bar (pilihan) */}
+        {/* Progress Bar */}
         <div className="max-w-md mx-auto mb-6">
           <div className="w-full bg-gray-300 rounded-full h-3">
             <div
@@ -157,13 +186,8 @@ export default function Home() {
               {Object.entries(jadwal)
                 .filter(([key]) => !excludedKeys.includes(key))
                 .map(([sholat, waktu]) => (
-                  <li
-                    key={sholat}
-                    className="flex justify-between border-b pb-2 last:border-0"
-                  >
-                    <span className="font-medium text-gray-700">
-                      {formatKey(sholat)}
-                    </span>
+                  <li key={sholat} className="flex justify-between border-b pb-2 last:border-0">
+                    <span className="font-medium text-gray-700">{formatKey(sholat)}</span>
                     <span className="text-gray-900">{waktu}</span>
                   </li>
                 ))}
