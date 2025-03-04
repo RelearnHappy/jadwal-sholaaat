@@ -187,11 +187,11 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="mb-6 text-center">
         <h1 className="text-3xl font-bold text-gray-800">
-          Jadwal Imsakiyah Ramadhan 1446H / 2025M
+          Jadwal Imsakiyah Ramadhan 1446H / 2025M 🌙
         </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
         <h3 className="text-xl font-bold text-gray-800">
-          Selamat Menjalankan Puasa Ramadhan 1446H / 2025M
+          Selamat Menjalankan Puasa Ramadhan  🕌✨
         </h3>
         <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
 
@@ -271,12 +271,12 @@ export default function Home() {
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="border p-2">Tanggal</th>
-                    <th className="border p-2">Imsak</th>
-                    <th className="border p-2">Subuh</th>
-                    <th className="border p-2">Dzuhur</th>
-                    <th className="border p-2">Ashar</th>
-                    <th className="border p-2">Maghrib</th>
-                    <th className="border p-2">Isya</th>
+                    <th className="border p-2">Imsak 🔔</th>
+                    <th className="border p-2">Subuh 🌅</th>
+                    <th className="border p-2">Dzuhur ☀️</th>
+                    <th className="border p-2">Ashar 🌇</th>
+                    <th className="border p-2">Maghrib 🌆</th>
+                    <th className="border p-2">Isya 🌙</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -320,10 +320,10 @@ export default function Home() {
       </main>
 
       <footer className="bg-white text-center text-sm text-gray-600 p-4 border-t">
-        <p>© 2025 Jadwal Imsakiyah Kabupaten Subang</p>
+        <p>© 2025 Jadwal Imsakiyah Kabupaten Subang 🌍</p>
         <p>Data diambil dari Aladhan API</p>
-        <p>Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi setempat.</p>
-        <p>Build with ❤️.</p>
+        <p>Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi setempat ✅.</p>
+        <p>🚀Build With❤️.</p>
       </footer>
     </div>
   );
