@@ -83,10 +83,13 @@ export default function Home() {
           )}
         </div>
       </div>
-      <footer className="text-center text-gray-600 py-4 w-full max-w-md">
+      <footer className="mt-8 text-center text-sm text-gray-600">
         <p>© 2025 Jadwal Imsakiyah Kabupaten Subang</p>
         <p>Data diambil dari Aladhan API</p>
-        <p>Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi setempat.</p>
+        <p>
+          Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi
+          setempat.
+        </p>
       </footer>
     </main>
   );
