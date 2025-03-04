@@ -128,7 +128,27 @@ export default function Home() {
         <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
       </header>
       <main className="flex-grow p-0.3">
+	  
+	// Tanggal mulai Ramadan: 1 Maret 2025
+	const ramadanStart = new Date("2025-03-01");
 
+	// Hitung informasi Ramadan secara dinamis
+	let ramadanDayText = "";
+	let ramadanDateText = "";
+	if (currentTime >= ramadanStart) {
+	const diffDays = Math.floor((currentTime.getTime() - ramadanStart.getTime()) / (1000 * 60 * 60 * 24));
+	const ramadanDay = diffDays + 1; // Hari pertama adalah 1
+	ramadanDayText = `Ramadhan Hari ke-${ramadanDay}`;
+	ramadanDateText = currentTime.toLocaleDateString("id-ID", {
+	weekday: "long",
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+	});
+	} else {
+	ramadanDayText = "Ramadhan belum dimulai";
+	}
+	
         {/* Waktu Sekarang */}
         <div className="flex flex-col items-center mb-6">
           <span className="text-xl font-bold text-gray-700">🕥 Waktu Sekarang:</span>
