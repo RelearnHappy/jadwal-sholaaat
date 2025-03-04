@@ -86,28 +86,37 @@ export default function Home() {
     setNextPrayer(next);
   };
 
+  // Fungsi getCountdown sudah mengembalikan {hours, minutes, seconds, progress, color}
   const getCountdown = () => {
-    if (!nextPrayer || !currentTime) return { hours: 0, minutes: 0, seconds: 0, progress: 0 };
+    if (!nextPrayer || !currentTime) {
+      return { hours: 0, minutes: 0, seconds: 0, progress: 0, color: "bg-green-500" };
+    }
     const now = new Date();
     const diff = Math.max(0, nextPrayer.time.getTime() - now.getTime());
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
+    // Logika warna berdasarkan sisa waktu
+    let color = "bg-green-500"; // Default: hijau
+    if (minutes < 60) color = "bg-yellow-500"; // Jika kurang dari 60 menit, warna kuning
+    if (minutes < 10) color = "bg-red-500"; // Jika kurang dari 10 menit, warna merah
+
+    // Perhitungan progress bar (menggunakan progres hari berjalan)
     const dayStart = new Date(nextPrayer.time);
     dayStart.setHours(0, 0, 0, 0);
     const totalDayMs = 24 * 60 * 60 * 1000;
     const passedMs = now.getTime() - dayStart.getTime();
     const progress = (passedMs / totalDayMs) * 100;
 
-    return { hours, minutes, seconds, progress };
+    return { hours, minutes, seconds, progress, color };
   };
 
   if (!isClient || !currentTime) {
     return <div className="text-center p-6">Loading...</div>;
   }
 
-  const { hours, minutes, seconds, progress } = getCountdown();
+  const { hours, minutes, seconds, progress, color } = getCountdown();
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -118,7 +127,7 @@ export default function Home() {
         <h3 className="text-xl font-bold text-gray-800">Selamat Menjalankan Puasa Ramadhan 1446H / 2025M</h3>
         <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
       </header>
-      <main className="flex-grow p-1.5">
+      <main className="flex-grow p-0.3">
 
         {/* Waktu Sekarang */}
         <div className="flex flex-col items-center mb-6">
@@ -132,7 +141,7 @@ export default function Home() {
         <div className="max-w-md mx-auto mb-6">
           <div className="w-full bg-gray-300 rounded-full h-3">
             <div
-              className="bg-green-500 h-3 rounded-full transition-all duration-300"
+              className={`${color} h-3 rounded-full transition-all duration-300`}
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -147,9 +156,9 @@ export default function Home() {
               {Object.entries(jadwal)
                 .filter(([key]) => !excludedKeys.includes(key))
                 .map(([sholat, waktu]) => (
-                  <li key={sholat} className="flex justify-between border-b pb-2 last:border-0">
-                    <span className="font-medium text-gray-700">{formatKey(sholat)}</span>
-                    <span className="text-gray-900">{waktu}</span>
+                  <li key={sholat} className="flex justify-between border-b pb-4.5 last:border-0">
+                    <span className="font-bold text-gray-700">{formatKey(sholat)}</span>
+                    <span className="font-bold text-gray-900">{waktu}</span>
                   </li>
                 ))}
             </ul>
@@ -161,7 +170,7 @@ export default function Home() {
 
         {/* Countdown */}
         {nextPrayer && (
-          <div className="max-w-md mx-auto bg-gradient-to-r from-green-500 via-black to-black text-white p-4 rounded-md shadow-md text-center mb-6">
+          <div className="max-w-md mx-auto bg-gradient-to-r from-green-500 via-black to-black text-white p-3.5 rounded-md shadow-md text-center mb-6">
             <p className="text-lg font-semibold">Berikutnya Waktu: {nextPrayer.name}</p>
             <p className="text-2xl font-mono">{nextPrayer.time.toLocaleTimeString("id-ID")}</p>
             <p className="mt-1">
