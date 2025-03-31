@@ -195,11 +195,7 @@ export default function Home() {
         </h3>
         <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
 
-        {/* Informasi Ramadan */}
-        <p className="text-lg font-medium text-gray-700 mt-2">{ramadanDayText}</p>
-        {ramadanDateText && (
-          <p className="text-sm text-gray-600">{ramadanDateText}</p>
-        )}
+        
       </header>
 
       <main className="flex-grow p-2.5">
