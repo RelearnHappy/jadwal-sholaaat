@@ -163,7 +163,7 @@ export default function Home() {
     return <div className="text-center p-6">Loading...</div>;
   }
 
-  // -- 7) Perhitungan info Ramadan
+  /* // -- 7) Perhitungan info Ramadan
   const ramadanStart = new Date("2025-03-01");
   let ramadanDayText = "";
   let ramadanDateText = "";
@@ -179,7 +179,7 @@ export default function Home() {
     });
   } else {
     ramadanDayText = "Ramadhan belum dimulai";
-  }
+  } */
 
   const { hours, minutes, seconds, progress, color } = getCountdown();
 
