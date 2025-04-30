@@ -163,6 +163,7 @@ export default function Home() {
     return <div className="text-center p-6">Loading...</div>;
   }
 
+  /*
   // -- 7) Perhitungan info Ramadan
   const ramadanStart = new Date("2025-03-01");
   let ramadanDayText = "";
@@ -180,6 +181,7 @@ export default function Home() {
   } else {
     ramadanDayText = "Ramadhan belum dimulai";
   }
+  */
 
   const { hours, minutes, seconds, progress, color } = getCountdown();
 
@@ -190,9 +192,6 @@ export default function Home() {
           Jadwal Sholat Ramadhan 1446H / 2025M 🌙
         </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
-        <h3 className="text-xl font-bold text-gray-800">
-          Selamat Menjalankan Puasa Ramadhan  🕌✨
-        </h3>
         <p className="text-gray-600 mt-2">📅 1 April - 30 April 2025</p>
 
         {/* Informasi Ramadan */}
@@ -260,7 +259,7 @@ export default function Home() {
         {/* === TABEL JADWAL BULANAN (APRIL 2025) === */}
         <section className="max-w-5xl mx-auto mt-8">
           <h2 className="text-2xl font-bold text-center mb-4">
-            Tabel Jadwal Sholat Ramadhan (APRIL 2025)
+            Tabel Jadwal Sholat(APRIL 2025)
           </h2>
           {monthSchedule.length === 0 && !error && (
             <p className="text-center">Memuat jadwal bulanan...</p>
