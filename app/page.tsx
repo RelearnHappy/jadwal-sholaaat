@@ -268,7 +268,6 @@ export default function Home() {
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="border p-2">Tanggal</th>
-                    <th className="border p-2">Imsak 🔔</th>
                     <th className="border p-2">Subuh 🌅</th>
                     <th className="border p-2">Dzuhur ☀️</th>
                     <th className="border p-2">Ashar 🌇</th>
