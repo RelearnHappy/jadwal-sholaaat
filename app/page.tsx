@@ -8,13 +8,13 @@ type Timings = {
 
 interface DayData {
   date: {
-    readable: string;           // "01 Mar 2025"
+    readable: string;           // "01 Apr 2025"
     timestamp: string;         // "1746034800"
     hijri: Record<string, any>; // detail tanggal hijriyah
     gregorian: {
-      date: string;            // "01 Mar 2025"
-      weekday: { en: string }; // "Saturday"
-      month: { en: string };   // "March"
+      date: string;            // "01 April 2025"
+      weekday: { en: string }; // "Tuesday"
+      month: { en: string };   // "April"
       year: string;            // "2025"
     };
   };
@@ -60,7 +60,7 @@ export default function Home() {
 
   // -- 3) Fetch jadwal bulanan (untuk tabel sebulan penuh)
   useEffect(() => {
-    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=3&year=2025`;
+    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=4&year=2025`;
 
     fetch(monthUrl)
       .then((res) => res.json())
@@ -190,15 +190,11 @@ export default function Home() {
           Jadwal Sholat 1446H / 2025M 🌙
         </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
-        /* <h3 className="text-xl font-bold text-gray-800">
-          Selamat Menjalankan Puasa Ramadhan  🕌✨
-        </h3> */
-
         <h3 className="text-xl font-bold text-gray-800">
-         /* Selamat Menjalankan Puasa Ramadhan */  🕌✨
+          🕌✨🕌✨
         </h3>
         
-        <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
+        <p className="text-gray-600 mt-2">📅 1 April - 30 April 2025</p>
 
         
       </header>
