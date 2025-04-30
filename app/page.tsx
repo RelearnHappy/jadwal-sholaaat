@@ -187,12 +187,17 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="mb-6 text-center">
         <h1 className="text-3xl font-bold text-[#FFD700] text-glow">
-          Jadwal Imsakiyah Ramadhan 1446H / 2025M 🌙
+          Jadwal Sholat 1446H / 2025M 🌙
         </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
-        <h3 className="text-xl font-bold text-gray-800">
+        /* <h3 className="text-xl font-bold text-gray-800">
           Selamat Menjalankan Puasa Ramadhan  🕌✨
+        </h3> */
+
+        <h3 className="text-xl font-bold text-gray-800">
+         /* Selamat Menjalankan Puasa Ramadhan */  🕌✨
         </h3>
+        
         <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
 
         
@@ -253,10 +258,10 @@ export default function Home() {
           </div>
         )}
 
-        {/* === TABEL JADWAL BULANAN (MARET 2025) === */}
+        {/* === TABEL JADWAL BULANAN (APRIL 2025) === */}
         <section className="max-w-5xl mx-auto mt-8">
           <h2 className="text-2xl font-bold text-center mb-4">
-            Tabel Jadwal Sholat Ramadhan (Maret 2025)
+            Tabel Jadwal Sholat (APRIL 2025)
           </h2>
           {monthSchedule.length === 0 && !error && (
             <p className="text-center">Memuat jadwal bulanan...</p>
@@ -316,7 +321,7 @@ export default function Home() {
       </main>
 
       <footer className="bg-white text-center text-sm text-gray-600 p-4 border-t">
-        <p>© 2025 Jadwal Imsakiyah Kabupaten Subang 🌍</p>
+        <p>© 2025 Jadwal Sholat Kabupaten Subang 🌍</p>
         <p>Data diambil dari Aladhan API</p>
         <p>Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi setempat ✅.</p>
         <p>🚀Build With❤️.</p>
