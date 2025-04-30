@@ -8,13 +8,13 @@ type Timings = {
 
 interface DayData {
   date: {
-    readable: string;           // "01 Apr 2025"
+    readable: string;           // "01 Mar 2025"
     timestamp: string;         // "1746034800"
     hijri: Record<string, any>; // detail tanggal hijriyah
     gregorian: {
-      date: string;            // "01 Apr 2025"
-      weekday: { en: string }; // "Tuesday"
-      month: { en: string };   // "April"
+      date: string;            // "01 Mar 2025"
+      weekday: { en: string }; // "Saturday"
+      month: { en: string };   // "March"
       year: string;            // "2025"
     };
   };
@@ -60,13 +60,13 @@ export default function Home() {
 
   // -- 3) Fetch jadwal bulanan (untuk tabel sebulan penuh)
   useEffect(() => {
-    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=4&year=2025`;
+    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=3&year=2025`;
 
     fetch(monthUrl)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.data) {
-          // data.data akan berisi array dayData untuk setiap hari di bulan April
+          // data.data akan berisi array dayData untuk setiap hari di bulan Maret
           setMonthSchedule(data.data);
         } else {
           setError("Data jadwal bulanan tidak ditemukan.");
@@ -163,8 +163,7 @@ export default function Home() {
     return <div className="text-center p-6">Loading...</div>;
   }
 
-  /*
-  // -- 7) Perhitungan info Ramadan
+  /* // -- 7) Perhitungan info Ramadan
   const ramadanStart = new Date("2025-03-01");
   let ramadanDayText = "";
   let ramadanDateText = "";
@@ -180,8 +179,7 @@ export default function Home() {
     });
   } else {
     ramadanDayText = "Ramadhan belum dimulai";
-  }
-  */
+  } */
 
   const { hours, minutes, seconds, progress, color } = getCountdown();
 
@@ -189,16 +187,20 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="mb-6 text-center">
         <h1 className="text-3xl font-bold text-[#FFD700] text-glow">
-          Jadwal Sholat Ramadhan 1446H / 2025M 🌙
+          Jadwal Sholat 1446H / 2025M 🌙
         </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
-        <p className="text-gray-600 mt-2">📅 1 April - 30 April 2025</p>
+        /* <h3 className="text-xl font-bold text-gray-800">
+          Selamat Menjalankan Puasa Ramadhan  🕌✨
+        </h3> */
 
-        {/* Informasi Ramadan */}
-        <p className="text-lg font-medium text-gray-700 mt-2">{ramadanDayText}</p>
-        {ramadanDateText && (
-          <p className="text-sm text-gray-600">{ramadanDateText}</p>
-        )}
+        <h3 className="text-xl font-bold text-gray-800">
+         /* Selamat Menjalankan Puasa Ramadhan */  🕌✨
+        </h3>
+        
+        <p className="text-gray-600 mt-2">📅 1 Maret - 30 Maret 2025</p>
+
+        
       </header>
 
       <main className="flex-grow p-2.5">
@@ -221,7 +223,7 @@ export default function Home() {
         </div>
 
         {/* Jadwal Sholat Hari Ini */}
-        <div className="max-w-md mx-auto bg-[#1B263B] rounded-lg shadow-lg p-6">
+        <div className="max-w-md mx-auto bg-gradient-to-r from-[#1B263B] to-[#2C3E50] text-white rounded-lg shadow-lg p-8">
           {error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : jadwal ? (
@@ -259,7 +261,7 @@ export default function Home() {
         {/* === TABEL JADWAL BULANAN (APRIL 2025) === */}
         <section className="max-w-5xl mx-auto mt-8">
           <h2 className="text-2xl font-bold text-center mb-4">
-            Tabel Jadwal Sholat(APRIL 2025)
+            Tabel Jadwal Sholat (APRIL 2025)
           </h2>
           {monthSchedule.length === 0 && !error && (
             <p className="text-center">Memuat jadwal bulanan...</p>
