@@ -294,7 +294,6 @@ export default function Home() {
                         <td className="border p-2">
                           {date.gregorian.date} ({date.gregorian.weekday.en})
                         </td>
-                        <td className="border p-2">{Imsak}</td>
                         <td className="border p-2">{Fajr}</td>
                         <td className="border p-2">{Dhuhr}</td>
                         <td className="border p-2">{Asr}</td>
