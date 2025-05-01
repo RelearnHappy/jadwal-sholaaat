@@ -192,7 +192,7 @@ export default function Home() {
         </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
         <h3 className="text-xl font-bold text-gray-800">
-          🕌✨🕌✨
+          🕌✨🕌✨🕌
         </h3>
         
         <p className="text-gray-600 mt-2">📅 1 Mei - 30 Mei 2025</p>
