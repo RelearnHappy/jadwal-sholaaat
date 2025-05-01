@@ -8,13 +8,13 @@ type Timings = {
 
 interface DayData {
   date: {
-    readable: string;           // "01 Apr 2025"
+    readable: string;           // "01 May 2025"
     timestamp: string;         // "1746034800"
     hijri: Record<string, any>; // detail tanggal hijriyah
     gregorian: {
-      date: string;            // "01 April 2025"
-      weekday: { en: string }; // "Tuesday"
-      month: { en: string };   // "April"
+      date: string;            // "01 May 2025"
+      weekday: { en: string }; // "Thursday"
+      month: { en: string };   // "May"
       year: string;            // "2025"
     };
   };
@@ -60,13 +60,13 @@ export default function Home() {
 
   // -- 3) Fetch jadwal bulanan (untuk tabel sebulan penuh)
   useEffect(() => {
-    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=4&year=2025`;
+    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=5&year=2025`;
 
     fetch(monthUrl)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.data) {
-          // data.data akan berisi array dayData untuk setiap hari di bulan Maret
+          // data.data akan berisi array dayData untuk setiap hari di bulan Mei
           setMonthSchedule(data.data);
         } else {
           setError("Data jadwal bulanan tidak ditemukan.");
@@ -163,6 +163,7 @@ export default function Home() {
     return <div className="text-center p-6">Loading...</div>;
   }
 
+  /*INI DINONAKTIFKAN SELAIN DIBULAN RAMADHA HIJRIYAH */
   /* // -- 7) Perhitungan info Ramadan
   const ramadanStart = new Date("2025-03-01");
   let ramadanDayText = "";
@@ -194,7 +195,7 @@ export default function Home() {
           🕌✨🕌✨
         </h3>
         
-        <p className="text-gray-600 mt-2">📅 1 April - 30 April 2025</p>
+        <p className="text-gray-600 mt-2">📅 1 Mei - 30 Mei 2025</p>
 
         
       </header>
@@ -254,10 +255,10 @@ export default function Home() {
           </div>
         )}
 
-        {/* === TABEL JADWAL BULANAN (APRIL 2025) === */}
+        {/* === TABEL JADWAL BULANAN (MEI 2025) === */}
         <section className="max-w-5xl mx-auto mt-8">
           <h2 className="text-2xl font-bold text-center mb-4">
-            Tabel Jadwal Sholat (APRIL 2025)
+            Tabel Jadwal Sholat (MEI 2025)
           </h2>
           {monthSchedule.length === 0 && !error && (
             <p className="text-center">Memuat jadwal bulanan...</p>
@@ -279,7 +280,7 @@ export default function Home() {
                   {monthSchedule.map((dayData, idx) => {
                     // dayData: { date: {...}, timings: {...}, meta: {...} }
                     const { date, timings } = dayData;
-                    // Contoh: date.gregorian.date = "01 Mar 2025"
+                    // Contoh: date.gregorian.date = "01 May 2025"
                     const {
                       Imsak,
                       Fajr,
