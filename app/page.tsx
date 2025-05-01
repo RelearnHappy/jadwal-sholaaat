@@ -267,7 +267,7 @@ export default function Home() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-200">
+                  <tr className="bg-black-200">
                     <th className="border p-2">Tanggal</th>
                     <th className="border p-2">Subuh 🌅</th>
                     <th className="border p-2">Dzuhur ☀️</th>
