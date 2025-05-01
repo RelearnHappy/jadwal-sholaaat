@@ -195,7 +195,7 @@ export default function Home() {
           🕌✨🕌✨🕌
         </h3>
         
-        <p className="text-gray-600 mt-2">📅 1 Mei - 30 Mei 2025</p>
+        <p className="text-gray-600 mt-2">📅 1 Mei - 31 Mei 2025</p>
 
         
       </header>
