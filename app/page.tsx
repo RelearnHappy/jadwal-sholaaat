@@ -232,7 +232,7 @@ export default function Home() {
                     key={sholat}
                     className="flex justify-between border-b pb-4.5 last:border-0"
                   >
-                    <span className="font-bold text-gray-700">{formatKey(sholat)}</span>
+                    <span className="font-bold text-black-700">{formatKey(sholat)}</span>
                     <span className="font-bold text-gray-900">{waktu}</span>
                   </li>
                 ))}
@@ -255,65 +255,37 @@ export default function Home() {
           </div>
         )}
 
-        {/* === TABEL JADWAL BULANAN (JUNI 2025) === */}
-        <section className="max-w-5xl mx-auto mt-8">
-          <h2 className="text-2xl font-bold text-center mb-4">
-            Tabel Jadwal Sholat (JUNI 2025)
-          </h2>
-          {monthSchedule.length === 0 && !error && (
-            <p className="text-center">Memuat jadwal bulanan...</p>
-          )}
-          {monthSchedule.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-black-200">
-                    <th className="border p-2">Tanggal</th>
-                    <th className="border p-2">Subuh 🌅</th>
-                    <th className="border p-2">Dzuhur ☀️</th>
-                    <th className="border p-2">Ashar 🌇</th>
-                    <th className="border p-2">Maghrib 🌆</th>
-                    <th className="border p-2">Isya 🌙</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {monthSchedule.map((dayData, idx) => {
-                    // dayData: { date: {...}, timings: {...}, meta: {...} }
-                    const { date, timings } = dayData;
-                    // Contoh: date.gregorian.date = "01 June 2025"
-                    const {
-                      Imsak,
-                      Fajr,
-                      Dhuhr,
-                      Asr,
-                      Maghrib,
-                      Isha
-                    } = timings;
+        <table className="w-full text-left border-collapse bg-white text-gray-800 shadow-md rounded-md overflow-hidden">
+  <thead>
+    <tr className="bg-gray-800 text-white">
+      <th className="border border-gray-300 p-3">Tanggal</th>
+      <th className="border border-gray-300 p-3">Subuh 🌅</th>
+      <th className="border border-gray-300 p-3">Dzuhur ☀️</th>
+      <th className="border border-gray-300 p-3">Ashar 🌇</th>
+      <th className="border border-gray-300 p-3">Maghrib 🌆</th>
+      <th className="border border-gray-300 p-3">Isya 🌙</th>
+    </tr>
+  </thead>
+  <tbody>
+    {monthSchedule.map((dayData, idx) => {
+      const { date, timings } = dayData;
+      const {
+        Imsak, Fajr, Dhuhr, Asr, Maghrib, Isha
+      } = timings;
 
-                    return (
-                      <tr key={idx}>
-                        <td className="border p-2">
-                          {date.gregorian.date} ({date.gregorian.weekday.en})
-                        </td>
-                        <td className="border p-2">{Fajr}</td>
-                        <td className="border p-2">{Dhuhr}</td>
-                        <td className="border p-2">{Asr}</td>
-                        <td className="border p-2">{Maghrib}</td>
-                        <td className="border p-2">{Isha}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {error && (
-            <p className="text-center text-red-500 mt-4">
-              {error}
-            </p>
-          )}
-        </section>
-      </main>
+      return (
+        <tr key={idx} className={idx % 2 === 0 ? "bg-gray-100" : "bg-white"}>
+          <td className="border border-gray-300 p-3">{date.gregorian.date} ({date.gregorian.weekday.en})</td>
+          <td className="border border-gray-300 p-3">{Fajr}</td>
+          <td className="border border-gray-300 p-3">{Dhuhr}</td>
+          <td className="border border-gray-300 p-3">{Asr}</td>
+          <td className="border border-gray-300 p-3">{Maghrib}</td>
+          <td className="border border-gray-300 p-3">{Isha}</td>
+        </tr>
+      );
+    })}
+  </tbody>
+</table>
 
       <footer className="bg-white text-center text-sm text-gray-600 p-4 border-t">
         <p>© 2025 Jadwal Sholat Kabupaten Subang 🌍</p>
