@@ -254,10 +254,10 @@ export default function Home() {
             </p>
           </div>
         )}
-
+      
         {/* === TABEL JADWAL BULANAN (JUNI 2025) === */}
-        <section className="max-w-5xl mx-auto mt-8">
-          <h2 className="text-2xl font-bold text-center mb-4">
+        <section className="max-w-5xl mx-auto mt-8 bg-gray-100 p-6 rounded-lg shadow-md">
+          <h2 className="text-3xl font-extrabold text-center mb-6 text-indigo-700">
             Tabel Jadwal Sholat (JUNI 2025)
           </h2>
           {monthSchedule.length === 0 && !error && (
