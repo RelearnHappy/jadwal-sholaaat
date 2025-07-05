@@ -8,13 +8,13 @@ type Timings = {
 
 interface DayData {
   date: {
-    readable: string;           // "01 June 2025"
+    readable: string;           // "01 July 2025"
     timestamp: string;         // "1746034800"
     hijri: Record<string, any>; // detail tanggal hijriyah
     gregorian: {
-      date: string;            // "01 June 2025"
-      weekday: { en: string }; // "Sunday"
-      month: { en: string };   // "June"
+      date: string;            // "01 July 2025"
+      weekday: { en: string }; // "Teusday"
+      month: { en: string };   // "July"
       year: string;            // "2025"
     };
   };
@@ -60,13 +60,13 @@ export default function Home() {
 
   // -- 3) Fetch jadwal bulanan (untuk tabel sebulan penuh)
   useEffect(() => {
-    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=6&year=2025`;
+    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=7&year=2025`;
 
     fetch(monthUrl)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.data) {
-          // data.data akan berisi array dayData untuk setiap hari di bulan Mei
+          // data.data akan berisi array dayData untuk setiap hari di bulan Juli
           setMonthSchedule(data.data);
         } else {
           setError("Data jadwal bulanan tidak ditemukan.");
@@ -195,7 +195,7 @@ export default function Home() {
           🕌✨🕌✨🕌
         </h3>
         
-        <p className="text-gray-600 mt-2">📅 1 Juni - 30 Juni 2025</p>
+        <p className="text-gray-600 mt-2">📅 1 Juli - 31 Juli 2025</p>
 
         
       </header>
@@ -255,10 +255,10 @@ export default function Home() {
           </div>
         )}
       
-        {/* === TABEL JADWAL BULANAN (JUNI 2025) === */}
+        {/* === TABEL JADWAL BULANAN (Juli 2025) === */}
         <section className="max-w-5xl mx-auto mt-8 bg-gray-100 p-6 rounded-lg shadow-md">
           <h2 className="text-3xl font-extrabold text-center mb-6 text-indigo-700">
-            Tabel Jadwal Sholat (JUNI 2025)
+            Tabel Jadwal Sholat (Juli 2025)
           </h2>
           {monthSchedule.length === 0 && !error && (
             <p className="text-center">Memuat jadwal bulanan...</p>
@@ -280,7 +280,7 @@ export default function Home() {
                   {monthSchedule.map((dayData, idx) => {
                     // dayData: { date: {...}, timings: {...}, meta: {...} }
                     const { date, timings } = dayData;
-                    // Contoh: date.gregorian.date = "01 June 2025"
+                    // Contoh: date.gregorian.date = "01 July 2025"
                     const {
                       Imsak,
                       Fajr,
