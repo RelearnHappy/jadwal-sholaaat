@@ -60,7 +60,7 @@ export default function Home() {
 
   // -- 3) Fetch jadwal bulanan (untuk tabel sebulan penuh)
   useEffect(() => {
-    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=7&year=2025`;
+    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=8&year=2025`;
 
     fetch(monthUrl)
       .then((res) => res.json())
