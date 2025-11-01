@@ -266,6 +266,7 @@ export default function Home() {
         <p>© 2025 Jadwal Sholat Kabupaten Subang 🌍</p>
         <p>Data diambil dari MyQuran API</p>
         <p>Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi setempat ✅</p>
+        <p>🚀Build With❤️.</p>
       </footer>
     </div>
   );
