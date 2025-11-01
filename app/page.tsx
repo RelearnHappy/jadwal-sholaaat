@@ -8,14 +8,14 @@ type Timings = {
 
 interface DayData {
   date: {
-    readable: string;           // "01 September 2025"
-    timestamp: string;         // "1746034800"
-    hijri: Record<string, any>; // detail tanggal hijriyah
+    readable: string;
+    timestamp: string;
+    hijri: Record<string, any>;
     gregorian: {
-      date: string;            // "01 September 2025"
-      weekday: { en: string }; // "monday"
-      month: { en: string };   // "September"
-      year: string;            // "2025"
+      date: string;
+      weekday: { en: string };
+      month: { en: string };
+      year: string;
     };
   };
   timings: Timings;
@@ -23,9 +23,7 @@ interface DayData {
 }
 
 export default function Home() {
-  // State untuk jadwal 1 hari (untuk Next Prayer)
   const [jadwal, setJadwal] = useState<Timings | null>(null);
-  // State untuk jadwal 1 bulan penuh
   const [monthSchedule, setMonthSchedule] = useState<DayData[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,15 +33,16 @@ export default function Home() {
 
   const excludedKeys = ["Midnight", "Firstthird", "Lastthird", "Sunrise", "Sunset"];
 
-  // -- 1) Pastikan kita sudah di client side
+  // -- 1) Pastikan client side aktif
   useEffect(() => {
     setIsClient(true);
     setCurrentTime(new Date());
   }, []);
 
-  // -- 2) Fetch jadwal harian (untuk Next Prayer)
+  // -- 2) Fetch jadwal harian (method 20 = Kemenag Indonesia)
   useEffect(() => {
-    const url = `https://api.aladhan.com/v1/timingsByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8`;
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    const url = `https://api.aladhan.com/v1/timingsByCity/${today}?city=Subang&state=Jawa%20Barat&country=Indonesia&method=20`;
 
     fetch(url)
       .then((res) => res.json())
@@ -58,15 +57,17 @@ export default function Home() {
       .catch(() => setError("Gagal memuat jadwal sholat harian. Coba lagi nanti."));
   }, []);
 
-  // -- 3) Fetch jadwal bulanan (untuk tabel sebulan penuh)
+  // -- 3) Fetch jadwal bulanan (method 20 + bulan & tahun otomatis)
   useEffect(() => {
-    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=8&month=9&year=2025`;
+    const now = new Date();
+    const month = now.getMonth() + 1; // Januari = 1
+    const year = now.getFullYear();
+    const monthUrl = `https://api.aladhan.com/v1/calendarByCity?city=Subang&state=Jawa%20Barat&country=Indonesia&method=20&month=${month}&year=${year}`;
 
     fetch(monthUrl)
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.data) {
-          // data.data akan berisi array dayData untuk setiap hari di bulan September
+        if (data?.data) {
           setMonthSchedule(data.data);
         } else {
           setError("Data jadwal bulanan tidak ditemukan.");
@@ -75,79 +76,62 @@ export default function Home() {
       .catch(() => setError("Gagal memuat jadwal sholat bulanan. Coba lagi nanti."));
   }, []);
 
-  // -- 4) Update waktu setiap detik, cari Next Prayer lagi
+  // -- 4) Update jam tiap detik & refresh next prayer
   useEffect(() => {
     if (!isClient) return;
-
     const interval = setInterval(() => {
       setCurrentTime(new Date());
       if (jadwal) findNextPrayer(jadwal);
     }, 1000);
-
     return () => clearInterval(interval);
   }, [jadwal, isClient]);
 
-  // Fungsi untuk me-translate nama key API ke bahasa Indonesia
+  // Format nama waktu salat → Bahasa Indonesia
   const formatKey = (key: string): string => {
     switch (key) {
-      case "Fajr":
-        return "Subuh";
-      case "Dhuhr":
-        return "Dzuhur";
-      case "Asr":
-        return "Ashar";
-      case "Maghrib":
-        return "Maghrib";
-      case "Isha":
-        return "Isya";
-      case "Imsak":
-        return "Imsak";
-      default:
-        return key;
+      case "Fajr": return "Subuh";
+      case "Dhuhr": return "Dzuhur";
+      case "Asr": return "Ashar";
+      case "Maghrib": return "Maghrib";
+      case "Isha": return "Isya";
+      case "Imsak": return "Imsak";
+      default: return key;
     }
   };
 
-  // -- 5) Mencari Next Prayer (jadwal harian)
+  // -- 5) Cari salat berikutnya
   const findNextPrayer = (timings: Timings) => {
     const now = new Date();
     const prayerTimes = Object.entries(timings)
       .filter(([key]) => !excludedKeys.includes(key))
       .map(([name, time]) => {
-        const [hoursStr, minutesStr] = time.split(":");
-        const prayerTime = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          parseInt(hoursStr),
-          parseInt(minutesStr),
-          0
-        );
+        const [hours, minutes] = time.split(":").map(Number);
+        const prayerTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
         return { name: formatKey(name), time: prayerTime };
       })
       .sort((a, b) => a.time.getTime() - b.time.getTime());
 
     const next =
-      prayerTimes.find((p) => p.time > now) || {
-        ...prayerTimes[0],
-        time: new Date(prayerTimes[0].time.getTime() + 24 * 60 * 60 * 1000),
-      };
+      prayerTimes.find((p) => p.time > now) ||
+      { ...prayerTimes[0], time: new Date(prayerTimes[0].time.getTime() + 24 * 60 * 60 * 1000) };
+
     setNextPrayer(next);
   };
 
-  // -- 6) Hitung countdown ke next prayer
+  // -- 6) Hitung countdown
   const getCountdown = () => {
-    if (!nextPrayer || !currentTime) {
+    if (!nextPrayer || !currentTime)
       return { hours: 0, minutes: 0, seconds: 0, progress: 0, color: "bg-green-500" };
-    }
+
     const now = new Date();
     const diff = Math.max(0, nextPrayer.time.getTime() - now.getTime());
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    let color = "bg-green-500"; // Default: hijau
-    if (minutes < 60) color = "bg-yellow-500"; // Jika < 60 menit, kuning
-    if (minutes < 10) color = "bg-red-500"; // Jika < 10 menit, merah
+    let color = "bg-green-500";
+    if (minutes < 60) color = "bg-yellow-500";
+    if (minutes < 10) color = "bg-red-500";
 
     const dayStart = new Date(nextPrayer.time);
     dayStart.setHours(0, 0, 0, 0);
@@ -158,46 +142,19 @@ export default function Home() {
     return { hours, minutes, seconds, progress, color };
   };
 
-  // Jika belum siap di client
-  if (!isClient || !currentTime) {
+  if (!isClient || !currentTime)
     return <div className="text-center p-6">Loading...</div>;
-  }
-
-  /*INI DINONAKTIFKAN SELAIN DIBULAN RAMADHA HIJRIYAH */
-  /* // -- 7) Perhitungan info Ramadan
-  const ramadanStart = new Date("2025-03-01");
-  let ramadanDayText = "";
-  let ramadanDateText = "";
-  if (currentTime >= ramadanStart) {
-    const diffDays = Math.floor((currentTime.getTime() - ramadanStart.getTime()) / (1000 * 60 * 60 * 24));
-    const ramadanDay = diffDays + 1; // Hari pertama = 1
-    ramadanDayText = `Ramadhan Hari ke-${ramadanDay}`;
-    ramadanDateText = currentTime.toLocaleDateString("id-ID", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  } else {
-    ramadanDayText = "Ramadhan belum dimulai";
-  } */
 
   const { hours, minutes, seconds, progress, color } = getCountdown();
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="mb-6 text-center">
-        <h1 className="text-3xl font-bold text-[#FFD700] text-glow">
-          Jadwal Sholat 1447H / 2025M 🌙
-        </h1>
+        <h1 className="text-3xl font-bold text-[#FFD700]">Jadwal Sholat 1447H / {new Date().getFullYear()}M 🌙</h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
-        <h3 className="text-xl font-bold text-gray-800">
-          🕌✨🕌✨🕌
-        </h3>
-        
-        <p className="text-gray-600 mt-2">📅 1 September - 30 September 2025</p>
-
-        
+        <p className="text-gray-600 mt-2">
+          📅 {new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" })}
+        </p>
       </header>
 
       <main className="flex-grow p-2.5">
@@ -228,12 +185,9 @@ export default function Home() {
               {Object.entries(jadwal)
                 .filter(([key]) => !excludedKeys.includes(key))
                 .map(([sholat, waktu]) => (
-                  <li
-                    key={sholat}
-                    className="flex justify-between border-b pb-4.5 last:border-0"
-                  >
-                    <span className="font-bold text-black-700">{formatKey(sholat)}</span>
-                    <span className="font-bold text-gray-900">{waktu}</span>
+                  <li key={sholat} className="flex justify-between border-b pb-2 last:border-0">
+                    <span className="font-bold">{formatKey(sholat)}</span>
+                    <span className="font-bold text-gray-100">{waktu}</span>
                   </li>
                 ))}
             </ul>
@@ -245,61 +199,47 @@ export default function Home() {
         {/* Countdown Next Prayer */}
         {nextPrayer && (
           <div className="max-w-md mx-auto bg-gradient-to-r from-green-500 via-black to-black text-white p-3.5 rounded-md shadow-md text-center mb-6">
-            <p className="text-lg font-semibold">Berikutnya Waktu: {nextPrayer.name}</p>
-            <p className="text-2xl font-mono">
-              {nextPrayer.time.toLocaleTimeString("id-ID")}
-            </p>
+            <p className="text-lg font-semibold">Berikutnya: {nextPrayer.name}</p>
+            <p className="text-2xl font-mono">{nextPrayer.time.toLocaleTimeString("id-ID")}</p>
             <p className="mt-1">
-              Waktu tersisa: {hours} jam {minutes} menit {seconds} detik
+              ⏳ {hours} jam {minutes} menit {seconds} detik lagi
             </p>
           </div>
         )}
-      
-        {/* === TABEL JADWAL BULANAN (September 2025) === */}
+
+        {/* === TABEL JADWAL BULANAN === */}
         <section className="max-w-5xl mx-auto mt-8 bg-gray-100 p-6 rounded-lg shadow-md">
           <h2 className="text-3xl font-extrabold text-center mb-6 text-indigo-700">
-            Tabel Jadwal Sholat (September 2025)
+            Tabel Jadwal Sholat ({new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" })})
           </h2>
-          {monthSchedule.length === 0 && !error && (
-            <p className="text-center">Memuat jadwal bulanan...</p>
-          )}
+
+          {monthSchedule.length === 0 && !error && <p className="text-center">Memuat jadwal bulanan...</p>}
           {monthSchedule.length > 0 && (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse bg-white text-gray-800 shadow-md rounded-md overflow-hidden">
                 <thead>
                   <tr className="bg-gray-800 text-white">
-                    <th className="border-gray-300 p-3">Tanggal</th>
-                    <th className="border-gray-300 p-3">Subuh 🌅</th>
-                    <th className="border-gray-300 p-3">Dzuhur ☀️</th>
-                    <th className="border-gray-300 p-3">Ashar 🌇</th>
-                    <th className="border-gray-300 p-3">Maghrib 🌆</th>
-                    <th className="border-gray-300 p-3">Isya 🌙</th>
+                    <th className="p-3">Tanggal</th>
+                    <th className="p-3">Subuh 🌅</th>
+                    <th className="p-3">Dzuhur ☀️</th>
+                    <th className="p-3">Ashar 🌇</th>
+                    <th className="p-3">Maghrib 🌆</th>
+                    <th className="p-3">Isya 🌙</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {monthSchedule.map((dayData, idx) => {
-                    // dayData: { date: {...}, timings: {...}, meta: {...} }
-                    const { date, timings } = dayData;
-                    // Contoh: date.gregorian.date = "01 September 2025"
-                    const {
-                      Imsak,
-                      Fajr,
-                      Dhuhr,
-                      Asr,
-                      Maghrib,
-                      Isha
-                    } = timings;
-
+                  {monthSchedule.map((day, i) => {
+                    const { date, timings } = day;
                     return (
-                      <tr key={idx} className={idx % 2 === 0 ? "bg-gray-100" : "bg-white"}>
-                        <td className="border-gray-300 p-3">
+                      <tr key={i} className={i % 2 === 0 ? "bg-gray-100" : "bg-white"}>
+                        <td className="p-3">
                           {date.gregorian.date} ({date.gregorian.weekday.en})
                         </td>
-                        <td className="border-gray-300 p-3">{Fajr}</td>
-                        <td className="border-gray-300 p-3">{Dhuhr}</td>
-                        <td className="border-gray-300 p-3">{Asr}</td>
-                        <td className="border-gray-300 p-3">{Maghrib}</td>
-                        <td className="border-gray-300 p-3">{Isha}</td>
+                        <td className="p-3">{timings.Fajr}</td>
+                        <td className="p-3">{timings.Dhuhr}</td>
+                        <td className="p-3">{timings.Asr}</td>
+                        <td className="p-3">{timings.Maghrib}</td>
+                        <td className="p-3">{timings.Isha}</td>
                       </tr>
                     );
                   })}
@@ -307,19 +247,15 @@ export default function Home() {
               </table>
             </div>
           )}
-          {error && (
-            <p className="text-center text-red-500 mt-4">
-              {error}
-            </p>
-          )}
+          {error && <p className="text-center text-red-500 mt-4">{error}</p>}
         </section>
       </main>
 
       <footer className="bg-white text-center text-sm text-gray-600 p-4 border-t">
-        <p>© 2025 Jadwal Sholat Kabupaten Subang 🌍</p>
-        <p>Data diambil dari Aladhan API</p>
-        <p>Waktu shalat bersifat perkiraan. Silakan verifikasi dengan jadwal resmi setempat ✅.</p>
-        <p>🚀Build With❤️.</p>
+        <p>© {new Date().getFullYear()} Jadwal Sholat Kabupaten Subang 🌍</p>
+        <p>Data dari AlAdhan API (method 20 — Kemenag RI)</p>
+        <p>Waktu bersifat perkiraan, verifikasi dengan jadwal resmi setempat ✅</p>
+        <p>🚀 Build with ❤️</p>
       </footer>
     </div>
   );
