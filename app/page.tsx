@@ -39,7 +39,7 @@ export default function Home() {
 
   // -- 2) Fetch jadwal harian dari MyQuran
   useEffect(() => {
-    const url = `https://api.myquran.com/v2/sholat/jadwal/${cityId}/today`;
+    const url = `https://api.myquran.com/v2/sholat/jadwal/${cityId}/2025/11`;
 
     fetch(url)
       .then((res) => res.json())
