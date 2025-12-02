@@ -169,7 +169,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="mb-6 text-center">
-        <h1 className="text-3xl font-bold text-yellow-400 drop-shadow-[0_0_10px_rgba(255,223,0,0.7)]">
+        <h1 className="text-3xl font-extrabold text-center mb-6 text-indigo-700">
           Jadwal Sholat 1447H / 2025M 🌙
         </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
