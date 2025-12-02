@@ -172,6 +172,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold bg-gradient-to-l from-green-500 via-black to-black text-white px-8 py-3 rounded-md shadow-md">
           Jadwal Sholat 1447H / 2025M 🌙
         </h1>
+        <main className="flex-grow p-1.5">
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
         <h3 className="text-xl font-bold text-gray-800">🕌✨🕌✨🕌</h3>
       </header>
