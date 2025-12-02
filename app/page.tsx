@@ -169,7 +169,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="mb-6 text-center">
-        <h1 className="text-3xl font-bold bg-gradient-to-l from-green-500 via-black to-black bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-gradient-to-l from-green-500 via-black to-black text-white px-8 py-3 rounded-md shadow-md">
           Jadwal Sholat 1447H / 2025M 🌙
         </h1>
         <h2 className="text-2xl font-bold text-gray-800">Kabupaten Subang</h2>
